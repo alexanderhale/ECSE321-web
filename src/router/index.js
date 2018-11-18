@@ -19,7 +19,7 @@ export default new Router({
       component: FleetStatus
     },
     {
-      path: '/app2',
+      path: '/rankings',
       name: 'Rankings',
       component: Rankings
     }
