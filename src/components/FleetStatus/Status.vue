@@ -7,12 +7,12 @@
         <b-button href="#/status/passengers">Passengers</b-button>
         <b-button href="#/status/journeys/">Journeys</b-button>
       </b-button-group>
-  </div>
+    </div>
     <div style="padding-top: 50px;">
       <b-button-group vertical size="lg">
         <b-button href="#/">Home</b-button>
       </b-button-group>
-  </div>
+    </div>
   </div>
 </template>
 
@@ -20,7 +20,7 @@
 </script>
 
 <style>
-  #ridesharingapp {
+  #ridesharing {
     font-family: 'Avenir', Helvetica, Arial, sans-serif;
     color: #2c3e50;
     background: #f2ece8;

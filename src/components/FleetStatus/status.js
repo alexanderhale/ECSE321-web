@@ -10,7 +10,7 @@ function EventDto (name, date, start, end) {
   this.endTime = end
 }
 export default {
-  name: 'fleetstatus',
+  name: 'fleet_status',
   data () {
     return {
       participants: [],

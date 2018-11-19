@@ -22,6 +22,12 @@
 		</b-container>
 		<b-table class="ranking-table" striped hover :items="items"></b-table>
 	</div>
+	<div style="padding-top: 20px;">
+      <b-button-group vertical size="lg">
+        <b-button v-on:click="resetCategory()" v-if="selectedCategory">Back</b-button>
+        <b-button href="#/">Home</b-button>
+      </b-button-group>
+    </div>
   </div>
 </template>
 

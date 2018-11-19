@@ -12,6 +12,10 @@ export default {
 	methods: {
 		setCategory(val) {
 			this.selectedCategory = val
+		},
+
+		resetCategory() {
+			this.selectedCategory = null;
 		} 
 	},
 	mounted () {
