@@ -2,13 +2,40 @@ import { baseUrl } from '../apiConfig';
 import axios from 'axios';
 import moment from 'moment';
 
+const computeMostPopularRoutes = (journeys, startDate, endDate) => {
+  const freqDict = {};
+  journeys.forEach(journey => {
+    const pickupDate = moment(
+      journey.timePickup.substring(0, journey.timePickup.indexOf('-'))
+    ).format('YYYY-MM-DD');
+    if (
+      moment(pickupDate, 'YYYY-MM-DD').isBetween(startDate, endDate) ||
+      !startDate ||
+      !endDate
+    ) {
+      const routeKey = `${journey.startCity.trim()}-${journey.endCity.trim()}`;
+      if (routeKey in freqDict) freqDict[routeKey] += 1;
+      else freqDict[routeKey] = 1;
+    }
+  });
+  return Object.keys(freqDict).map(routeKey => {
+    const startCity = routeKey.substring(0, routeKey.indexOf('-'));
+    const endCity = routeKey.substring(startCity.length + 1);
+    return {
+      startCity,
+      endCity,
+      timesTravelled: freqDict[routeKey]
+    };
+  });
+};
+
 export default {
   name: 'rankings',
   data() {
     return {
       selectedCategory: '',
       journeys: [],
-      filteredJourneys: null,
+      mostPopularJourneys: null,
       startDateFilter: '',
       endDateFilter: ''
     };
@@ -25,13 +52,17 @@ export default {
     updateJourneys() {
       const startDate = moment(this.startDateFilter);
       const endDate = moment(this.endDateFilter);
-      if (!startDate._isValid && !endDate._isValid)
-        this.filteredJourneys = null;
-      else {
-        this.filteredJourneys = this.journeys.filter(j =>
-          this.startDateFilter && this.endDateFilter
-            ? moment(j.date, 'YYYY-MM-DD').isBetween(startDate, endDate)
-            : true
+      if (startDate._isValid && endDate._isValid) {
+        this.mostPopularJourneys = computeMostPopularRoutes(
+          this.journeys,
+          startDate,
+          endDate
+        );
+      } else {
+        this.mostPopularJourneys = computeMostPopularRoutes(
+          this.journeys,
+          null,
+          null
         );
       }
     }
@@ -43,28 +74,14 @@ export default {
           'Content-Type': 'application/json'
         }
       })
-      .then(
-        res =>
-          (this.journeys = res.data
-            .map(journey => {
-              return {
-                startAddress: journey.startAddress,
-                startCity: journey.startCity,
-                startCountry: journey.startCountry,
-                endAddress: journey.endAddress,
-                endCity: journey.endCity,
-                endCountry: journey.endCountry,
-                rating: journey.rating,
-                date: moment(
-                  journey.timePickup.substring(
-                    0,
-                    journey.timePickup.indexOf('-')
-                  )
-                ).format('YYYY-MM-DD')
-              };
-            })
-            .sort((a, b) => b.rating - a.rating))
-      )
+      .then(res => {
+        this.journeys = res.data;
+        this.mostPopularJourneys = computeMostPopularRoutes(
+          res.data,
+          null,
+          null
+        );
+      })
       .catch(err => console.error(err));
   }
 };

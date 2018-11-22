@@ -20,7 +20,7 @@
       			<b-col sm="9"><b-form-input id="end-date" type="date" v-model="endDateFilter" v-on:change="updateJourneys()"></b-form-input></b-col>
 			</b-row>
 		</b-container>
-		<b-table class="ranking-table" striped hover :items="filteredJourneys ? filteredJourneys : journeys"></b-table>
+		<b-table class="ranking-table" striped hover :items="mostPopularJourneys"></b-table>
 	</div>	
 	<div style="padding-top: 20px;">
       <b-button-group vertical size="lg">
