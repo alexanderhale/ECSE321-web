@@ -14,10 +14,10 @@ const computeTopPerformingDrivers = (drivers, startDate, endDate) => {
   });
 };
 
-const computeMostLoyalPassengers = (riders, startDate, endDate) => {
+const computeMostLoyalPassengers = (passengers, startDate, endDate) => {
   const freqDict = {};
-  riders.forEach(rider => {
-    const passengerKey = `${rider.riderid}-${rider.rating}`;
+  passengers.forEach(passenger => {
+    const passengerKey = `${passenger.passengerid}-${passenger.rating}`;
   });
   return Object.keys(freqDict).map(routeKey => {
     const passengerId = passengerKey.substring(0, passengerKey.indexOf('-'));
@@ -125,19 +125,42 @@ export default {
       })
       .then(res => {
         this.journeys = res.data;
-        // update drivers
-        this.topPerformingDrivers = computeTopPerformingDrivers(
-          this.drivers, null, null
-        );
-        // update passengers
-        this.mostLoyalPassengers = computeMostLoyalPassengers(
-          this.passengers, null, null
-        );
-        // update journeys
+
         this.mostPopularJourneys = computeMostPopularRoutes(
           this.journeys, null, null
         );
       })
       .catch(err => console.error(err));
+
+    axios
+      .get(`${baseUrl}/driver/admin/all`, {
+        headers: {
+          'Content-Type': 'application/json'
+        }
+      })
+      .then(res => {
+        this.drivers = res.data;
+
+        // update drivers
+        this.topPerformingDrivers = computeTopPerformingDrivers(
+          this.drivers, null, null
+        );
+      })
+      .catch(err => console.error(err));
+
+      axios
+      .get(`${baseUrl}/rider/admin/all`, {
+        headers: {
+          'Content-Type': 'application/json'
+        }
+      })
+      .then(res => {
+        this.passengers = res.data;
+
+        this.mostLoyalPassengers = computeMostLoyalPassengers(
+          this.passengers, null, null
+        );
+      })
+      .catch(err => console.error(err));       
   }
 };
