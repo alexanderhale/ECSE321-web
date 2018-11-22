@@ -2,6 +2,14 @@ import { baseUrl } from '../apiConfig';
 import axios from 'axios';
 import moment from 'moment';
 
+const computeTopPerformingDrivers = (drivers, startDate, endDate) => {
+  // TODO
+};
+
+const computeMostLoyalPassengers = (passengers, startDate, endDate) => {
+  // TODO
+};
+
 const computeMostPopularRoutes = (journeys, startDate, endDate) => {
   const freqDict = {};
   journeys.forEach(journey => {
@@ -34,7 +42,11 @@ export default {
   data() {
     return {
       selectedCategory: '',
+      drivers: [],
+      passengers: [],
       journeys: [],
+      topPerformingDrivers: null,
+      mostLoyalPassengers: null,
       mostPopularJourneys: null,
       startDateFilter: '',
       endDateFilter: ''
@@ -49,24 +61,49 @@ export default {
       this.selectedCategory = null;
     },
 
-    updateJourneys() {
+    checkCategory(val) {
+      if (this.selectedCategory == val) {
+        return true;
+      } else {
+        return false;
+      }
+    },
+
+    updateRankings() {
+      //get dates
       const startDate = moment(this.startDateFilter);
       const endDate = moment(this.endDateFilter);
+
       if (startDate._isValid && endDate._isValid) {
+        // update drivers
+        this.topPerformingDrivers = computeTopPerformingDrivers(
+          this.drivers, startDate, endDate
+        );
+        // update passengers
+        this.mostLoyalPassengers = computeMostLoyalPassengers(
+          this.passengers, startDate, endDate
+        );
+        // update journeys
         this.mostPopularJourneys = computeMostPopularRoutes(
-          this.journeys,
-          startDate,
-          endDate
+          this.journeys, startDate, endDate
         );
       } else {
+        // update drivers
+        this.topPerformingDrivers = computeTopPerformingDrivers(
+          this.drivers, null, null
+        );
+        // update passengers
+        this.mostLoyalPassengers = computeMostLoyalPassengers(
+          this.passengers, null, null
+        );
+        // update journeys
         this.mostPopularJourneys = computeMostPopularRoutes(
-          this.journeys,
-          null,
-          null
+          this.journeys, null, null
         );
       }
     }
   },
+
   mounted() {
     axios
       .get(`${baseUrl}/journey/all`, {
@@ -76,10 +113,17 @@ export default {
       })
       .then(res => {
         this.journeys = res.data;
+        // update drivers
+        this.topPerformingDrivers = computeTopPerformingDrivers(
+          this.drivers, null, null
+        );
+        // update passengers
+        this.mostLoyalPassengers = computeMostLoyalPassengers(
+          this.passengers, null, null
+        );
+        // update journeys
         this.mostPopularJourneys = computeMostPopularRoutes(
-          res.data,
-          null,
-          null
+          this.journeys, null, null
         );
       })
       .catch(err => console.error(err));
