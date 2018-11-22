@@ -2,6 +2,30 @@ import { baseUrl } from '../apiConfig';
 import axios from 'axios';
 import moment from 'moment';
 
+const computeTopPerformingDrivers = (drivers, startDate, endDate) => {
+  const freqDict = {};
+  drivers.forEach(driver => {
+    const driverKey = `${driver.driverid}-${driver.rating}`;
+  });
+  return Object.keys(freqDict).map(routeKey => {
+    const driverId = driverKey.substring(0, driverKey.indexOf('-'));
+    const driverRating = driverKey.substring(driverId.length + 1);
+    return {driverId, driverRating};
+  });
+};
+
+const computeMostLoyalPassengers = (passengers, startDate, endDate) => {
+  const freqDict = {};
+  passengers.forEach(passenger => {
+    const passengerKey = `${passenger.passengerid}-${passenger.rating}`;
+  });
+  return Object.keys(freqDict).map(routeKey => {
+    const passengerId = passengerKey.substring(0, passengerKey.indexOf('-'));
+    const passengerRating = passengerKey.substring(passengerId.length + 1);
+    return {passengerId, passengerRating};
+  });
+};
+
 const computeMostPopularRoutes = (journeys, startDate, endDate) => {
   const freqDict = {};
   journeys.forEach(journey => {
@@ -21,11 +45,7 @@ const computeMostPopularRoutes = (journeys, startDate, endDate) => {
   return Object.keys(freqDict).map(routeKey => {
     const startCity = routeKey.substring(0, routeKey.indexOf('-'));
     const endCity = routeKey.substring(startCity.length + 1);
-    return {
-      startCity,
-      endCity,
-      timesTravelled: freqDict[routeKey]
-    };
+    return {startCity, endCity, timesTravelled: freqDict[routeKey]};
   });
 };
 
@@ -34,7 +54,11 @@ export default {
   data() {
     return {
       selectedCategory: '',
+      drivers: [],
+      passengers: [],
       journeys: [],
+      topPerformingDrivers: null,
+      mostLoyalPassengers: null,
       mostPopularJourneys: null,
       startDateFilter: '',
       endDateFilter: ''
@@ -49,24 +73,49 @@ export default {
       this.selectedCategory = null;
     },
 
-    updateJourneys() {
+    checkCategory(val) {
+      if (this.selectedCategory == val) {
+        return true;
+      } else {
+        return false;
+      }
+    },
+
+    updateRankings() {
+      //get dates
       const startDate = moment(this.startDateFilter);
       const endDate = moment(this.endDateFilter);
+
       if (startDate._isValid && endDate._isValid) {
+        // update drivers
+        this.topPerformingDrivers = computeTopPerformingDrivers(
+          this.drivers, startDate, endDate
+        );
+        // update passengers
+        this.mostLoyalPassengers = computeMostLoyalPassengers(
+          this.passengers, startDate, endDate
+        );
+        // update journeys
         this.mostPopularJourneys = computeMostPopularRoutes(
-          this.journeys,
-          startDate,
-          endDate
+          this.journeys, startDate, endDate
         );
       } else {
+        // update drivers
+        this.topPerformingDrivers = computeTopPerformingDrivers(
+          this.drivers, null, null
+        );
+        // update passengers
+        this.mostLoyalPassengers = computeMostLoyalPassengers(
+          this.passengers, null, null
+        );
+        // update journeys
         this.mostPopularJourneys = computeMostPopularRoutes(
-          this.journeys,
-          null,
-          null
+          this.journeys, null, null
         );
       }
     }
   },
+
   mounted() {
     axios
       .get(`${baseUrl}/journey/all`, {
@@ -76,12 +125,42 @@ export default {
       })
       .then(res => {
         this.journeys = res.data;
+
         this.mostPopularJourneys = computeMostPopularRoutes(
-          res.data,
-          null,
-          null
+          this.journeys, null, null
         );
       })
       .catch(err => console.error(err));
+
+    axios
+      .get(`${baseUrl}/driver/admin/all`, {
+        headers: {
+          'Content-Type': 'application/json'
+        }
+      })
+      .then(res => {
+        this.drivers = res.data;
+
+        // update drivers
+        this.topPerformingDrivers = computeTopPerformingDrivers(
+          this.drivers, null, null
+        );
+      })
+      .catch(err => console.error(err));
+
+      axios
+      .get(`${baseUrl}/rider/admin/all`, {
+        headers: {
+          'Content-Type': 'application/json'
+        }
+      })
+      .then(res => {
+        this.passengers = res.data;
+
+        this.mostLoyalPassengers = computeMostLoyalPassengers(
+          this.passengers, null, null
+        );
+      })
+      .catch(err => console.error(err));       
   }
 };
