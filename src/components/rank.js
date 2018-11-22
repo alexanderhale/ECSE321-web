@@ -3,11 +3,27 @@ import axios from 'axios';
 import moment from 'moment';
 
 const computeTopPerformingDrivers = (drivers, startDate, endDate) => {
-  // TODO
+  const freqDict = {};
+  drivers.forEach(driver => {
+    const driverKey = `${driver.driverid}-${driver.rating}`;
+  });
+  return Object.keys(freqDict).map(routeKey => {
+    const driverId = driverKey.substring(0, driverKey.indexOf('-'));
+    const driverRating = driverKey.substring(driverId.length + 1);
+    return {driverId, driverRating};
+  });
 };
 
-const computeMostLoyalPassengers = (passengers, startDate, endDate) => {
-  // TODO
+const computeMostLoyalPassengers = (riders, startDate, endDate) => {
+  const freqDict = {};
+  riders.forEach(rider => {
+    const passengerKey = `${rider.riderid}-${rider.rating}`;
+  });
+  return Object.keys(freqDict).map(routeKey => {
+    const passengerId = passengerKey.substring(0, passengerKey.indexOf('-'));
+    const passengerRating = passengerKey.substring(passengerId.length + 1);
+    return {passengerId, passengerRating};
+  });
 };
 
 const computeMostPopularRoutes = (journeys, startDate, endDate) => {
@@ -29,11 +45,7 @@ const computeMostPopularRoutes = (journeys, startDate, endDate) => {
   return Object.keys(freqDict).map(routeKey => {
     const startCity = routeKey.substring(0, routeKey.indexOf('-'));
     const endCity = routeKey.substring(startCity.length + 1);
-    return {
-      startCity,
-      endCity,
-      timesTravelled: freqDict[routeKey]
-    };
+    return {startCity, endCity, timesTravelled: freqDict[routeKey]};
   });
 };
 

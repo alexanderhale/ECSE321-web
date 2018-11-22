@@ -33,8 +33,8 @@
   </div>
 </template>
 
-<script src="./rank.js">
-</script>
+<script src="./rank.js"></script>
+
 <style>
 #ridesharing {
     font-family: 'Avenir', Helvetica, Arial, sans-serif;
