@@ -26,7 +26,7 @@
     },
 
     created() {
-      axios.get(baseUrl + `/rider/secure/all`, {
+      axios.get(baseUrl + `/rider/admin/all`, {
         headers: {
           'Content-Type': 'application/json'
         }
