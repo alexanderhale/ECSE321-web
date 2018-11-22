@@ -1,9 +1,14 @@
 <template>
-  <div id="passengers_status">
-    <h2>Passenger Status</h2>
-    <ul>
-      <li v-for="rider in riders">{{rider}}</li>
-    </ul>
+  <div id="riders_status">
+    <h2>Rider Status</h2>
+    <div>
+      <b-container fluid class="filter-inputs">
+        <b-row class="input">
+          <b-col sm="12"><b-form-input id="search-text" type="text" v-model="searchText" placeholder="Rider name" @input="updateRidersTable"></b-form-input></b-col>
+        </b-row>
+      </b-container>
+    </div>
+    <b-table class="journeys-table" striped hover :items="ridersMatched"></b-table>
     <div style="padding-top: 20px;">
       <b-button-group vertical size="lg">
         <b-button href="#/status/">Back</b-button>
@@ -13,29 +18,10 @@
   </div>
 </template>
 
-<script>
-  import axios from 'axios';
-  import {baseUrl} from "../../apiConfig";
 
-  export default {
-    name: 'status',
-    data() {
-      return {
-        riders: []
-      }
-    },
-
-    created() {
-      axios.get(baseUrl + `/rider/admin/all`, {
-        headers: {
-          'Content-Type': 'application/json'
-        }
-      })
-        .then(res => this.riders = res.data)
-        .catch(err => console.error(err))
-    }
-  }
+<script src="./passengerS.js">
 </script>
+
 
 <style>
   #ridesharing {
