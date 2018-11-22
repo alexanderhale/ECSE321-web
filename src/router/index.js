@@ -1,11 +1,5 @@
 import Vue from 'vue'
 import Router from 'vue-router'
-import Home from '@/components/Home'
-import Status from '@/components/FleetStatus/Status'
-import DriversStatus from '@/components/FleetStatus/DriversStatus'
-import PassengersStatus from '@/components/FleetStatus/PassengersStatus'
-import JourneysStatus from '@/components/FleetStatus/JourneysStatus'
-import Rankings from '@/components/Rankings'
 
 Vue.use(Router)
 
@@ -14,32 +8,32 @@ export default new Router({
     {
       path: '/',
       name: 'Home',
-      component: Home
+      component: require('../components/Home.vue').default
     },
     {
       path: '/status',
       name: 'Status',
-      component: Status
+      component: require('../components/FleetStatus/Status.vue').default
     },
     {
       path: '/status/drivers',
       name: 'DriversStatus',
-      component: DriversStatus
+      component: require('../components/FleetStatus/DriversStatus.vue').default
     },
     {
       path: '/status/passengers',
       name: 'PassengersStatus',
-      component: PassengersStatus
+      component: require('../components/FleetStatus/PassengersStatus.vue').default
     },
         {
       path: '/status/journeys',
       name: 'JourneysStatus',
-      component: JourneysStatus
+      component: require('../components/FleetStatus/JourneysStatus.vue').default
     },
     {
       path: '/rankings',
       name: 'Rankings',
-      component: Rankings
+      component: require('../components/Rankings.vue').default
     }
   ]
 })
