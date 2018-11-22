@@ -1,9 +1,14 @@
 <template>
   <div id="journeys_status">
     <h2>Journey Status</h2>
-    <ul>
-      <li v-for="journey in journeys">{{journey.startAddress}}</li>
-    </ul>
+    <div>
+      <b-container fluid class="filter-inputs">
+        <b-row class="input">
+          <b-col sm="12"><b-form-input id="search-text" type="text" v-model="searchText" placeholder="Journey name" @input="updateJourneysTable"></b-form-input></b-col>
+        </b-row>
+      </b-container>
+    </div>
+    <b-table class="journeys-table" striped hover :items="journeysMatched"></b-table>
     <div style="padding-top: 20px;">
       <b-button-group vertical size="lg">
         <b-button href="#/status/">Back</b-button>
@@ -13,29 +18,10 @@
   </div>
 </template>
 
-<script>
-  import axios from 'axios';
-  import {baseUrl} from "../../apiConfig";
 
-  export default {
-    name: 'status',
-    data() {
-      return {
-        journeys: []
-      }
-    },
-
-    created() {
-      axios.get(baseUrl + `/journey/all`, {
-        headers: {
-          'Content-Type': 'application/json'
-        }
-      })
-        .then(res => this.journeys = res.data)
-        .catch(err => console.error(err))
-    }
-  }
+<script src="./journeysS.js">
 </script>
+
 
 <style>
   #ridesharing {
