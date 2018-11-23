@@ -10,19 +10,27 @@
 	</div>
 	<div v-if="selectedCategory" class="ranking-info">
 		<h2>Top {{ selectedCategory }}</h2>
-		<b-container fluid v-if="checkCategory('journeys')" class="filter-inputs">
+		<b-container fluid class="filter-inputs">
 			<b-row class="input">
 				<b-col sm="3"><label for="start-date">Start date:</label></b-col>
-      	<b-col sm="9"><b-form-input id="start-date" type="date" v-model="startDateFilter" v-on:change="updateRankings()"></b-form-input></b-col>
+      			<b-col sm="9">
+					<b-form-input id="start-date" type="date" v-model="startDateFilter" v-on:change="updateRankings()"></b-form-input>
+				</b-col>
 			</b-row>
 			<b-row class="input">
 				<b-col sm="3"><label for="end-date">End date:</label></b-col>
-      			<b-col sm="9"><b-form-input id="end-date" type="date" v-model="endDateFilter" v-on:change="updateRankings()"></b-form-input></b-col>
+      			<b-col sm="9">
+					<b-form-input id="end-date" type="date" v-model="endDateFilter" v-on:change="updateRankings()" :state="computeFilterState()" aria-describedby="endDateFeedback"></b-form-input>
+					<b-form-invalid-feedback id="endDateFeedback">
+      					Filter will only apply when both dates are entered
+    				</b-form-invalid-feedback>
+				</b-col>
 			</b-row>
 		</b-container>
-		<b-table v-if="checkCategory('drivers')" class="ranking-table" striped hover :items="topPerformingDrivers"></b-table>
-    <b-table v-if="checkCategory('passengers')" class="ranking-table" striped hover :items="mostLoyalPassengers"></b-table>
-    <b-table v-if="checkCategory('journeys')" class="ranking-table" striped hover :items="mostPopularJourneys"></b-table>
+		<b-alert show v-if="computeAlertState()">Oops! Looks like nothing was found during that timeframe (Hint: try something in the month of November)</b-alert>
+		<b-table v-if="checkCategory('drivers') && !computeAlertState()" class="ranking-table" striped hover :items="topPerformingDrivers"></b-table>
+    	<b-table v-if="checkCategory('passengers') && !computeAlertState()" class="ranking-table" striped hover :items="mostLoyalPassengers"></b-table>
+    	<b-table v-if="checkCategory('journeys') && !computeAlertState()" class="ranking-table" striped hover :items="mostPopularJourneys"></b-table>
 	</div>	
 	<div style="padding-top: 20px;">
       <b-button-group vertical size="lg">
