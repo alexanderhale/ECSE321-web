@@ -16,9 +16,6 @@
   </div>
 </template>
 
-<script src="./status.js">
-</script>
-
 <style>
   #ridesharing {
     font-family: 'Avenir', Helvetica, Arial, sans-serif;
