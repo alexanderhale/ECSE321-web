@@ -3,18 +3,18 @@ import {baseUrl} from "../../apiConfig";
 
 // Function to sort alphabetically
 function dynamicSort(attribute) {
-    var sortOrder = 1;
-    if(attribute[0] === "-") {
-        sortOrder = -1;
-        attribute = attribute.substr(1);
+  var sortOrder = 1;
+  if (attribute[0] === "-") {
+    sortOrder = -1;
+    attribute = attribute.substr(1);
+  }
+  return function (a, b) {
+    if (sortOrder == -1) {
+      return b[attribute].localeCompare(a[attribute]);
+    } else {
+      return a[attribute].localeCompare(b[attribute]);
     }
-    return function (a,b) {
-        if(sortOrder == -1){
-            return b[attribute].localeCompare(a[attribute]);
-        }else{
-            return a[attribute].localeCompare(b[attribute]);
-        }        
-    }
+  }
 }
 
 const getRiders = (riders, searchBarText) => {
@@ -35,18 +35,44 @@ const getRiders = (riders, searchBarText) => {
   });
   // Using that dict to add riders into an Array allDrivers
   var allRiders = Object.keys(rankDict).map(riderKey => {
-      // Using the separators that we established earlier
-      const riderID = riderKey.substring(0, riderKey.indexOf('dIDd'));
-      const username = riderKey.substring(riderKey.indexOf('dIDd') + 4, riderKey.indexOf('dFNd'));
-      const name = riderKey.substring(riderKey.indexOf('dFNd') + 4, riderKey.indexOf('dUNd'));
-      const rating = riderKey.substring(riderKey.indexOf('dUNd') + 4, riderKey.indexOf('dCMd'));
-      const numberRides = riderKey.substring(riderKey.indexOf('dCMd') + 4, riderKey.indexOf('dSTd'));
-      var status = riderKey.substring(riderKey.indexOf('dSTd') + 4, riderKey.length);
-      if(status == 'false'){
-        status = "Not Riding"
-      }else{
-        status = "Riding"
-      }
+    // Using the separators that we established earlier
+    const riderID = riderKey.substring(0, riderKey.indexOf('dIDd'));
+    const username = riderKey.substring(riderKey.indexOf('dIDd') + 4, riderKey.indexOf('dFNd'));
+    const name = riderKey.substring(riderKey.indexOf('dFNd') + 4, riderKey.indexOf('dUNd'));
+    const rating = riderKey.substring(riderKey.indexOf('dUNd') + 4, riderKey.indexOf('dCMd'));
+    const numberRides = riderKey.substring(riderKey.indexOf('dCMd') + 4, riderKey.indexOf('dSTd'));
+    var status = riderKey.substring(riderKey.indexOf('dSTd') + 4, riderKey.length);
+    if (status == 'false') {
+      status = "Not Riding"
+    } else {
+      status = "Riding"
+    }
+    return {
+      riderID,
+      username,
+      name,
+      rating,
+      numberRides,
+      status
+    };
+  });
+  // Similar function as the above one but here we are using the search bar text to filter
+  var matchedRiders = Object.keys(rankDict).map(riderKey => {
+    const riderID = riderKey.substring(0, riderKey.indexOf('dIDd'));
+    const username = riderKey.substring(riderKey.indexOf('dIDd') + 4, riderKey.indexOf('dFNd'));
+    const name = riderKey.substring(riderKey.indexOf('dFNd') + 4, riderKey.indexOf('dUNd'));
+    const rating = riderKey.substring(riderKey.indexOf('dUNd') + 4, riderKey.indexOf('dCMd'));
+    const numberRides = riderKey.substring(riderKey.indexOf('dCMd') + 4, riderKey.indexOf('dSTd'));
+    var status = riderKey.substring(riderKey.indexOf('dSTd') + 4, riderKey.length);
+    if (status == 'false') {
+      status = "Not Riding"
+    } else {
+      status = "Riding"
+    }
+    // Checking if the fullname or username matches the text typed in the search bar,
+    // if not don't add the rider
+    if (String(name.toLowerCase()).includes(searchBarText.toLowerCase()) ||
+      String(username.toLowerCase()).includes(searchBarText.toLowerCase())) {
       return {
         riderID,
         username,
@@ -55,44 +81,18 @@ const getRiders = (riders, searchBarText) => {
         numberRides,
         status
       };
-    });
-  // Similar function as the above one but here we are using the search bar text to filter
-  var matchedRiders = Object.keys(rankDict).map(riderKey => {
-      const riderID = riderKey.substring(0, riderKey.indexOf('dIDd'));
-      const username = riderKey.substring(riderKey.indexOf('dIDd') + 4, riderKey.indexOf('dFNd'));
-      const name = riderKey.substring(riderKey.indexOf('dFNd') + 4, riderKey.indexOf('dUNd'));
-      const rating = riderKey.substring(riderKey.indexOf('dUNd') + 4, riderKey.indexOf('dCMd'));
-      const numberRides = riderKey.substring(riderKey.indexOf('dCMd') + 4, riderKey.indexOf('dSTd'));
-      var status = riderKey.substring(riderKey.indexOf('dSTd') + 4, riderKey.length);
-      if(status == 'false'){
-        status = "Not Riding"
-      }else{
-        status = "Riding"
-      }
-      // Checking if the fullname or username matches the text typed in the search bar, 
-      // if not don't add the rider
-      if(String(name.toLowerCase()).includes(searchBarText.toLowerCase()) ||
-        String(username.toLowerCase()).includes(searchBarText.toLowerCase())){
-        return {
-          riderID,
-          username,
-          name,
-          rating,
-          numberRides,
-          status
-        };
-      }
-    });
+    }
+  });
   // Removing the undefined & null fields from the matched array
   var filteredRiders = matchedRiders.filter(function (rider) {
-  return rider != null;
+    return rider != null;
   });
   // Sorting the riders alphabetically
   filteredRiders.sort(dynamicSort("name"));
   // In case nothing was typed in the search bar, return all riders
-  if(searchBarText == ''){
+  if (searchBarText == '') {
     return allRiders;
-  }else{
+  } else {
     return filteredRiders;
   }
 };
@@ -119,7 +119,7 @@ export default {
         'Content-Type': 'application/json'
       }
     })
-      .then(res =>{
+      .then(res => {
         this.riders = res.data;
         this.ridersMatched = getRiders(res.data, this.searchText);
       })
