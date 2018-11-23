@@ -4,7 +4,7 @@
     <div>
       <b-container fluid class="filter-inputs">
         <b-row class="input">
-          <b-col sm="12"><b-form-input id="search-text" type="text" v-model="searchText" placeholder="Rider name" @input="updateRidersTable"></b-form-input></b-col>
+          <b-col sm="12"><b-form-input id="search-text" type="text" v-model="searchText" placeholder="Search Rider name or username..." @input="updateRidersTable"></b-form-input></b-col>
         </b-row>
       </b-container>
     </div>

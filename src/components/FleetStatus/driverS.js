@@ -23,9 +23,10 @@ const getDrivers = (drivers, searchBarText) => {
     const username = driver.username;
     const fullname = driver.name;
     const carModel = driver.carModel;
+    const status = driver.status;
     const age = driver.age;
     //Adding custom separators between the attributes to be able to separate the substrings later
-    const driverKey = `${driverID}dIDd${fullname}dFNd${username}dUNd${carModel}dCMd${age}`;
+    const driverKey = `${driverID}dIDd${fullname}dFNd${username}dUNd${carModel}dCMd${age}dSTd${status}`;
     //Storing the drivers in a dict
     rankDict[driverKey] = 1;
   });
@@ -35,13 +36,20 @@ const getDrivers = (drivers, searchBarText) => {
       const fullname = driverKey.substring(driverKey.indexOf('dIDd') + 4, driverKey.indexOf('dFNd'));
       const username = driverKey.substring(driverKey.indexOf('dFNd') + 4, driverKey.indexOf('dUNd'));
       const carModel = driverKey.substring(driverKey.indexOf('dUNd') + 4, driverKey.indexOf('dCMd'));
-      const age = driverKey.substring(driverKey.indexOf('dCMd') + 4, driverKey.length);
+      const age = driverKey.substring(driverKey.indexOf('dCMd') + 4, driverKey.indexOf('dSTd'));
+      var status = driverKey.substring(driverKey.indexOf('dSTd') + 4, driverKey.length);
+      if(status == 'false'){
+        status = "Not Riding"
+      }else{
+        status = "Riding"
+      }
       return {
         driverID,
         fullname,
         username,
         carModel,
-        age
+        age,
+        status
       };
     })
   var matchedDrivers = Object.keys(rankDict).map(driverKey => {
@@ -49,15 +57,23 @@ const getDrivers = (drivers, searchBarText) => {
       const fullname = driverKey.substring(driverKey.indexOf('dIDd') + 4, driverKey.indexOf('dFNd'));
       const username = driverKey.substring(driverKey.indexOf('dFNd') + 4, driverKey.indexOf('dUNd'));
       const carModel = driverKey.substring(driverKey.indexOf('dUNd') + 4, driverKey.indexOf('dCMd'));
-      const age = driverKey.substring(driverKey.indexOf('dCMd') + 4, driverKey.length);
+      const age = driverKey.substring(driverKey.indexOf('dCMd') + 4, driverKey.indexOf('dSTd'));
+      var status = driverKey.substring(driverKey.indexOf('dSTd') + 4, driverKey.length);
+      if(status == 'false'){
+        status = "Not Riding"
+      }else{
+        status = "Riding"
+      }      
       // Checking if the fullname matches the text typed in the search bar, if not don't add the driver
-      if(String(fullname.toLowerCase()).includes(searchBarText.toLowerCase())){
+      if(String(fullname.toLowerCase()).includes(searchBarText.toLowerCase()) ||
+        String(username.toLowerCase()).includes(searchBarText.toLowerCase())){
         return {
           driverID,
           fullname,
           username,
           carModel,
-          age
+          age,
+          status
         };
       }
     })

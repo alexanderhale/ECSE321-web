@@ -1,36 +1,93 @@
 import axios from 'axios';
 import {baseUrl} from "../../apiConfig";
 
+// Function to sort alphabetically
+function dynamicSort(attribute) {
+    var sortOrder = 1;
+    if(attribute[0] === "-") {
+        sortOrder = -1;
+        attribute = attribute.substr(1);
+    }
+    return function (a,b) {
+        if(sortOrder == -1){
+            return b[attribute].localeCompare(a[attribute]);
+        }else{
+            return a[attribute].localeCompare(b[attribute]);
+        }        
+    }
+}
+
 const getRiders = (riders, searchBarText) => {
-  console.log('Text is ' + searchBarText);
   const rankDict = {}
   riders.forEach(rider => {
-    //console.log(riders.length)
     const riderID = rider.riderid;
     const username = rider.username;
     const name = rider.name;
     const rating = rider.rating;
+    const status = rider.status;
     const numberRides = rider.numberrides;
-
-    const riderKey = `${riderID}dIDd${username}dFNd${name}dUNd${rating}dCMd${numberRides}`;
+    const riderKey = `${riderID}dIDd${username}dFNd${name}dUNd${rating}dCMd${numberRides}dSTd${status}`;
     rankDict[riderKey] = 1;
     // }
   });
-  if(searchBarText == ''){
-    return Object.keys(rankDict).map(riderKey => {
+
+  var allRiders = Object.keys(rankDict).map(riderKey => {
       const riderID = riderKey.substring(0, riderKey.indexOf('dIDd'));
       const username = riderKey.substring(riderKey.indexOf('dIDd') + 4, riderKey.indexOf('dFNd'));
       const name = riderKey.substring(riderKey.indexOf('dFNd') + 4, riderKey.indexOf('dUNd'));
       const rating = riderKey.substring(riderKey.indexOf('dUNd') + 4, riderKey.indexOf('dCMd'));
-      const numberRides = riderKey.substring(riderKey.indexOf('dCMd') + 4, riderKey.length);
+      const numberRides = riderKey.substring(riderKey.indexOf('dCMd') + 4, riderKey.indexOf('dSTd'));
+      var status = riderKey.substring(riderKey.indexOf('dSTd') + 4, riderKey.length);
+      if(status == 'false'){
+        status = "Not Riding"
+      }else{
+        status = "Riding"
+      }
       return {
         riderID,
         username,
         name,
         rating,
-        numberRides
+        numberRides,
+        status
       };
     });
+
+  var matchedRiders = Object.keys(rankDict).map(riderKey => {
+      const riderID = riderKey.substring(0, riderKey.indexOf('dIDd'));
+      const username = riderKey.substring(riderKey.indexOf('dIDd') + 4, riderKey.indexOf('dFNd'));
+      const name = riderKey.substring(riderKey.indexOf('dFNd') + 4, riderKey.indexOf('dUNd'));
+      const rating = riderKey.substring(riderKey.indexOf('dUNd') + 4, riderKey.indexOf('dCMd'));
+      const numberRides = riderKey.substring(riderKey.indexOf('dCMd') + 4, riderKey.indexOf('dSTd'));
+      var status = riderKey.substring(riderKey.indexOf('dSTd') + 4, riderKey.length);
+      if(status == 'false'){
+        status = "Not Riding"
+      }else{
+        status = "Riding"
+      }
+      if(String(name.toLowerCase()).includes(searchBarText.toLowerCase()) ||
+        String(username.toLowerCase()).includes(searchBarText.toLowerCase())){
+        return {
+          riderID,
+          username,
+          name,
+          rating,
+          numberRides,
+          status
+        };
+      }
+    });
+  // Removing the undefined & null fields from the matched array
+  var filteredRiders = matchedRiders.filter(function (rider) {
+  return rider != null;
+  });
+  // Sorting the riders alphabetically
+  filteredRiders.sort(dynamicSort("name"));
+  // In case nothing was typed in the search bar, return all riders
+  if(searchBarText == ''){
+    return allRiders;
+  }else{
+    return filteredRiders;
   }
 };
 
@@ -39,7 +96,7 @@ export default {
   data() {
     return {
       riders: [],
-      ridersMatched: null,
+      ridersMatched: [],
       searchText: '',
     }
   },

@@ -4,7 +4,7 @@
     <div>
       <b-container fluid class="filter-inputs">
         <b-row class="input">
-          <b-col sm="12"><b-form-input id="search-text" type="text" v-model="searchText" placeholder="Journey name" @input="updateJourneysTable"></b-form-input></b-col>
+          <b-col sm="12"><b-form-input id="search-text" type="text" v-model="searchText" placeholder="Start or end address, city, country..." @input="updateJourneysTable"></b-form-input></b-col>
         </b-row>
       </b-container>
     </div>
@@ -28,5 +28,33 @@
     font-family: 'Avenir', Helvetica, Arial, sans-serif;
     color: #2c3e50;
     background: #f2ece8;
+  }
+  .journeys-buttons,
+  .journeys-info {
+      margin-top: 20px;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+  }
+
+  .button {
+      display: block;
+      margin: 20px 0;
+      width: 200px;
+  }
+
+  .filter-inputs {
+      width: 500px;
+      margin-top: 20px;
+  }
+
+  .input {
+      margin: 20px 0;
+  }
+
+  .journeys-table {
+      margin-top: 32px;
+      width: 100%;
   }
 </style>
