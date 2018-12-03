@@ -1,3 +1,5 @@
+Please note that this repository is a mirror of the private group project repository. A fork would have been more ideal than a mirror, but making private forks public is not permitted.
+
 # frontendweb
 
 > A Vue.js web frontend for t15
